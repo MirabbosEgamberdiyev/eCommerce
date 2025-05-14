@@ -1,0 +1,34 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/product_db
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  server:
+    port: 9090
+  application:
+    name: ProductService
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+logging:
+  level:
+    org:
+      springframework:
+        web: INFO
+    com:
+      yourcompany:
+        productservice: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
