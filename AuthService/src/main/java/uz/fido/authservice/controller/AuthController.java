@@ -10,7 +10,7 @@ import uz.fido.authservice.dto.AuthResponse;
 import uz.fido.authservice.service.AuthService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/inventory")
+@RequestMapping("/api/inventory")
 @RequiredArgsConstructor
 public class InventoryController {
 
@@ -38,5 +38,14 @@ public class InventoryController {
     public ResponseEntity<Void> deleteInventory(@PathVariable String id) {
         inventoryService.deleteInventory(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/{productCode}")
+    public boolean isInStock(@PathVariable String productCode) {
+        return inventoryService.isInStock(productCode);
+    }
+
+    @PostMapping
+    public Inventory create(@RequestBody Inventory inventory) {
+        return inventoryService.create(inventory);
     }
 }

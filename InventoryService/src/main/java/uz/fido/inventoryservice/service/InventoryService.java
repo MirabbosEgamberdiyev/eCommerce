@@ -1,6 +1,7 @@
 package uz.fido.inventoryservice.service;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.fido.inventoryservice.model.Inventory;
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class InventoryService {
 
-    @Autowired
-    private InventoryRepository inventoryRepository;
+    private final InventoryRepository inventoryRepository;
 
     public List<Inventory> getAllInventory() {
         return inventoryRepository.findAll();
@@ -29,5 +30,13 @@ public class InventoryService {
 
     public void deleteInventory(String id) {
         inventoryRepository.deleteById(id);
+    }
+    public boolean isInStock(String productCode) {
+        Optional<Inventory> inventory = inventoryRepository.findByProductCode(productCode);
+        return inventory.map(i -> i.getQuantity() > 0).orElse(false);
+    }
+
+    public Inventory create(Inventory inventory) {
+        return inventoryRepository.save(inventory);
     }
 }

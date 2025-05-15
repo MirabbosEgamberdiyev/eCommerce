@@ -1,13 +1,13 @@
 server:
-  port: 8083
+  port: 8085
 
 spring:
   application:
-    name: inventory-service
+    name: payment-service
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/inventory_db
+      uri: mongodb://localhost:27017/payment_db
 
   jackson:
     serialization:
@@ -30,7 +30,7 @@ springdoc:
 logging:
   level:
     org.springframework.web: INFO
-    com.example.inventoryservice: DEBUG
+    com.example.paymentservice: DEBUG
 
 management:
   endpoints:

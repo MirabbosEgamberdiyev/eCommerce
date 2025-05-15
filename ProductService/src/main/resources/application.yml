@@ -5,10 +5,15 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
-  server:
-    port: 9090
   application:
     name: ProductService
+  server:
+    port: 9090
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
 
 springdoc:
   api-docs:
@@ -31,4 +36,3 @@ management:
     web:
       exposure:
         include: "*"
-

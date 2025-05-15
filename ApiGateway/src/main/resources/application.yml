@@ -6,8 +6,6 @@ spring:
     name: ApiGateway
   cloud:
     gateway:
-      default-filters:
-        - RemoveRequestHeader=Cookie
       discovery:
         locator:
           enabled: true
@@ -28,20 +26,22 @@ spring:
           predicates:
             - Path=/api/orders/**
 
-        - id: inventory-service
-          uri: lb://inventory-service
-          predicates:
-            - Path=/api/inventory/**
-
         - id: payment-service
           uri: lb://payment-service
           predicates:
             - Path=/api/payments/**
 
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/inventory/**
+
         - id: notification-service
           uri: lb://notification-service
           predicates:
             - Path=/api/notify/**
+
+    # Boshqa konfiguratsiyalar kerak bo‘lsa, shu yerga qo‘shiladi
 
 eureka:
   client:

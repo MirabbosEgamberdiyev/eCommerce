@@ -93,4 +93,3 @@ Notification-Service – Email yoki SMS yuborish (masalan RabbitMQ orqali)
 
 Inventory-Service (optional) – Ombordagi mahsulot sonini boshqarish
 
-Shipping-Service (optional) – Yetkazib berish jarayonini boshqarish
