@@ -36,10 +36,10 @@ spring:
           predicates:
             - Path=/api/inventory/**
 
-        - id: notification-service
-          uri: lb://notification-service
-          predicates:
-            - Path=/api/notify/**
+#        - id: notification-service
+#          uri: lb://notification-service
+#          predicates:
+#            - Path=/api/notify/**
 
     # Boshqa konfiguratsiyalar kerak bo‘lsa, shu yerga qo‘shiladi
 

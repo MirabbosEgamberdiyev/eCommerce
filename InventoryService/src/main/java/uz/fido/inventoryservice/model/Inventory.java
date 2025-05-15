@@ -12,6 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Inventory {
     @Id
     private String id;
-    private String productId;
+    private String productCode;
     private Integer quantity;
 }
