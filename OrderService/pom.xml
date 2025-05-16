@@ -12,9 +12,9 @@
 	</parent>
 
 	<groupId>uz.fido</groupId>
-	<artifactId>OrderService</artifactId>
+	<artifactId>order-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>OrderService</name>
+	<name>order-service</name>
 	<description>Order service for managing customer orders</description>
 
 	<properties>
@@ -35,7 +35,7 @@
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 
-		<!-- Eureka Client -->
+		<!-- Eureka Client for service discovery -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>

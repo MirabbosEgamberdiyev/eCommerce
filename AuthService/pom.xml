@@ -12,9 +12,9 @@
 	</parent>
 
 	<groupId>uz.fido</groupId>
-	<artifactId>AuthService</artifactId>
+	<artifactId>auth-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>AuthService</name>
+	<name>auth-service</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -63,7 +63,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-			<version>4.0.0</version> <!-- Eureka Client version -->
 		</dependency>
 
 		<!-- Testing dependencies -->

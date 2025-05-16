@@ -12,9 +12,9 @@
 	</parent>
 
 	<groupId>uz.fido</groupId>
-	<artifactId>InventoryService</artifactId>
+	<artifactId>inventory-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>InventoryService</name>
+	<name>inventory-service</name>
 	<description>Inventory service for product stock management</description>
 
 	<properties>
@@ -42,7 +42,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Spring Cloud Eureka Client -->
+		<!-- Eureka Client for service discovery -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>

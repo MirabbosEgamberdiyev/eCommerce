@@ -3,25 +3,34 @@ server:
 
 spring:
   application:
-    name: AuthService
+    name: auth-service
+
   datasource:
     url: jdbc:postgresql://localhost:5432/authdb
     username: postgres
     password: 1234
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
   main:
     allow-circular-references: true
+
   cloud:
     compatibility-verifier:
       enabled: false
 
 eureka:
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
 jwt:
   secret: secret-key-should-be-long-and-secure
   expiration: 3600000 # 1 hour in milliseconds

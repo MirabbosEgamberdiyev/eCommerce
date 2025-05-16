@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import uz.fido.notificationservice.service.EmailService;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/notify")
 @RequiredArgsConstructor
 public class NotificationController {
 
