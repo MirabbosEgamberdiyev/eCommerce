@@ -10,11 +10,10 @@ import uz.fido.orderservice.model.Order;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderResponse {
-
     private String id;
     private String productId;
-    private Integer quantity;
-    private Double totalPrice;
+    private int quantity;
+    private double totalPrice;
 
     public OrderResponse(Order order) {
         this.id = order.getId();

@@ -3,37 +3,47 @@ server:
 
 spring:
   application:
-    name: product-service
-
+    name: PRODUCT-SERVICE
   data:
     mongodb:
-      uri: mongodb://localhost:27017/product_db
-
-  jackson:
-    serialization:
-      FAIL_ON_EMPTY_BEANS: false
+      uri: ${MONGODB_URI:mongodb://localhost:27017/product_db}
+  cloud:
+    discovery:
+      enabled: true
 
 eureka:
   client:
+    service-url:
+      defaultZone: http://admin:admin123@localhost:8761/eureka
     register-with-eureka: true
     fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
 
 springdoc:
   api-docs:
+    path: /api-docs
     enabled: true
   swagger-ui:
-    enabled: true
     path: /swagger-ui.html
-
-logging:
-  level:
-    org.springframework.web: INFO
-    uz.yourcompany.productservice: DEBUG
+    enabled: true
 
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info
+
+logging:
+  level:
+    root: INFO
+    uz.fido.product-service: DEBUG
+    org.springframework.data.mongodb: DEBUG
+    org.springframework.cloud: DEBUG
+  file:
+    name: logs/product-service.log
+  logback:
+    rolling-policy:
+      max-file-size: 10MB
+      max-history: 7
+      clean-history-on-start: true

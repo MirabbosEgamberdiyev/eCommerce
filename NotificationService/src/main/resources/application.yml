@@ -1,24 +1,61 @@
 server:
-  port: 8084
+  port: 8086
 
 spring:
   application:
-    name: notification-service
-
+    name: NOTIFICATION-SERVICE
   mail:
     host: smtp.gmail.com
     port: 587
-    username: mirabbosegamberdiyev7@gmail.com
-    password: Mirabbos2001
+    username: ${MAIL_USERNAME:mirabbosegamberdiyev7@gmail.com}
+    password: ${MAIL_PASSWORD:Mirabbos2001}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/notification_db}
+  cloud:
+    discovery:
+      enabled: true
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
     register-with-eureka: true
     fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    root: INFO
+    uz.fido.notification-service: DEBUG
+    org.springframework.data.mongodb: DEBUG
+    org.springframework.cloud: DEBUG
+    org.springframework.mail: DEBUG
+  file:
+    name: logs/notification-service.log
+  logback:
+    rolling-policy:
+      max-file-size: 10MB
+      max-history: 7
+      clean-history-on-start: true

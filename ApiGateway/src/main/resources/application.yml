@@ -1,62 +1,101 @@
 server:
-  port: 8000
+  port: 8080
+  # ssl:
+  #   enabled: true
+  #   key-store: classpath:keystore.p12
+  #   key-store-password: ${KEYSTORE_PASSWORD:changeit}
+  #   key-store-type: PKCS12
+  #   key-alias: gateway
 
 spring:
   application:
-    name: api-gateway
-
+    name: API-GATEWAY
   cloud:
     gateway:
       routes:
         - id: auth-service
-          uri: http://localhost:8081
+          uri: lb://AUTH-SERVICE
           predicates:
             - Path=/api/auth/**
-#          filters:
-#            - StripPrefix=1
-
+          filters:
+            - StripPrefix=1
         - id: product-service
-          uri: lb://product-service
+          uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/api/products/**
           filters:
             - StripPrefix=1
-
         - id: order-service
-          uri: lb://order-service
+          uri: lb://ORDER-SERVICE
           predicates:
             - Path=/api/orders/**
           filters:
             - StripPrefix=1
-
         - id: payment-service
-          uri: lb://payment-service
+          uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/api/payments/**
           filters:
             - StripPrefix=1
-
         - id: inventory-service
-          uri: lb://inventory-service
+          uri: lb://INVENTORY-SERVICE
           predicates:
             - Path=/api/inventory/**
           filters:
             - StripPrefix=1
-
         - id: notification-service
-          uri: lb://notification-service
+          uri: lb://NOTIFICATION-SERVICE
           predicates:
             - Path=/api/notify/**
           filters:
             - StripPrefix=1
+      # default-filters:
+      #   - AddRequestHeader=X-Request-Foo, Bar
+      # cors:
+      #   allowed-origins: "http://frontend.example.com"
+      #   allowed-methods: "*"
+      #   allowed-headers: "*"
+      #   allow-credentials: true
 
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL:http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka}
+  instance:
+    prefer-ip-address: true
 
 jwt:
-  secret: secret-key-should-be-long-and-secure
-  expiration: 3600000
+  secret: ${JWT_SECRET:your-very-long-and-secure-jwt-secret-key-for-hs256}
+  expiration: ${JWT_EXPIRATION:3600000}
+  public:
+    endpoints:
+      - /api/auth/login
+      - /api/auth/register
+      - /swagger-ui/**
+      - /api-docs/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,prometheus
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    uz.fido.api-gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+  file:
+    name: logs/api-gateway.log
+  logback:
+    rolling-policy:
+      max-file-size: 10MB
+      max-history: 7
+      clean-history-on-start: true

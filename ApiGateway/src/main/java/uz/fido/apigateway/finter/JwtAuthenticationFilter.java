@@ -1,8 +1,11 @@
 package uz.fido.apigateway.finter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -20,8 +23,14 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private static final String BEARER_PREFIX = "Bearer ";
+
     @Value("${jwt.secret}")
     private String secret;
+
+    @Value("${public.endpoints:/api/auth/login,/api/auth/register}")
+    private List<String> publicEndpoints;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
@@ -30,38 +39,44 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
-        System.out.println("Request path: " + path);
+        logger.debug("Processing request for path: {}", path);
 
-        if (path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register")) {
-            System.out.println("Permitting auth path without token check");
+        // Skip authentication for public endpoints
+        if (publicEndpoints.stream().anyMatch(path::startsWith)) {
+            logger.debug("Public endpoint detected, skipping JWT validation: {}", path);
             return chain.filter(exchange);
         }
 
+        // Check for Authorization header
         List<String> authHeaders = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if (authHeaders == null || authHeaders.isEmpty() || !authHeaders.get(0).startsWith("Bearer ")) {
-            System.out.println("Authorization header missing or invalid");
+        if (authHeaders == null || authHeaders.isEmpty() || !authHeaders.get(0).startsWith(BEARER_PREFIX)) {
+            logger.warn("Missing or invalid Authorization header for path: {}", path);
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
 
-        String token = authHeaders.get(0).substring(7);
+        // Validate JWT
+        String token = authHeaders.get(0).substring(BEARER_PREFIX.length());
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token);
-            System.out.println("JWT token valid");
+            logger.debug("JWT token validated successfully for path: {}", path);
             return chain.filter(exchange);
+        } catch (ExpiredJwtException e) {
+            logger.warn("JWT token expired for path: {}", path);
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
         } catch (JwtException e) {
-            System.out.println("JWT token invalid");
+            logger.warn("Invalid JWT token for path: {} - {}", path, e.getMessage());
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
     }
 
-
     @Override
     public int getOrder() {
-        return -1;
+        return -1; // Run early in the filter chain
     }
 }

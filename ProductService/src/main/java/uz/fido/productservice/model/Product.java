@@ -1,11 +1,14 @@
 package uz.fido.productservice.model;
 
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "products")
@@ -14,16 +17,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Builder
 public class Product {
-
     @Id
     private String id;
-    private String name;
-    private String description;
-    private Double price;
 
-    public Product(String name, String description, Double price) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-    }
+    @NotBlank(message = "Name is required")
+    private String name;
+
+    private String description;
+
+    @Min(value = 0, message = "Price cannot be negative")
+    private double price;
+
+    @Indexed(unique = true)
+    private String productCode;
 }

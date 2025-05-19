@@ -1,13 +1,47 @@
 server:
   port: 8761
+  # ssl:
+  #   enabled: true
+  #   key-store: classpath:keystore.p12
+  #   key-store-password: ${KEYSTORE_PASSWORD:changeit}
+  #   key-store-type: PKCS12
+  #   key-alias: eureka
 
 spring:
   application:
-    name: EurekaServer
+    name: EUREKA-SERVER
+  security:
+    user:
+      name: admin
+      password: ${EUREKA_PASSWORD:admin123}
 
 eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
+    service-url:
+      defaultZone: ${EUREKA_URL:http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka}
   server:
-    wait-time-in-ms-when-sync-empty: 0
+    wait-time-in-ms-when-sync-empty: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    uz.fido.eureka-server: DEBUG
+    com.netflix.eureka: DEBUG
+  file:
+    name: logs/eureka-server.log
+  logback:
+    rolling-policy:
+      max-file-size: 10MB
+      max-history: 7
+      clean-history-on-start: true
