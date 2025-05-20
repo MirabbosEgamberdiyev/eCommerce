@@ -1,5 +1,6 @@
 package uz.fido.notificationservice.config;
 
+import jakarta.validation.Validator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -8,7 +9,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class ValidatorConfig {
 
     @Bean
-    public jakarta.validation.Validator validator() {
+    public Validator validator() {
         return new LocalValidatorFactoryBean();
     }
 }
