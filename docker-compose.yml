@@ -7,8 +7,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=secret
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
     volumes:
       - mongodb_data:/data/db
     healthcheck:
@@ -25,9 +25,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=auth_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: auth_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -44,9 +44,9 @@ services:
     ports:
       - "8761:8761"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - EUREKA_URL=http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka
-      - EUREKA_PASSWORD=${EUREKA_PASSWORD:admin123}
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_URL: http://admin:${EUREKA_PASSWORD}@eureka-server:8761/eureka
+      EUREKA_PASSWORD: ${EUREKA_PASSWORD}
     volumes:
       - eureka_logs:/app/EUREKA-SERVER/logs
     healthcheck:
@@ -63,9 +63,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - EUREKA_URL=http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka
-      - JWT_SECRET=${JWT_SECRET:your-very-long-and-secure-jwt-secret-key-for-hs256}
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_URL: http://admin:${EUREKA_PASSWORD}@eureka-server:8761/eureka
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - gateway_logs:/app/API-GATEWAY/logs
     depends_on:
@@ -84,12 +84,12 @@ services:
     ports:
       - "8083:8083"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/auth_db
-      - SPRING_DATASOURCE_USERNAME=admin
-      - SPRING_DATASOURCE_PASSWORD=secret
-      - EUREKA_URL=http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka
-      - JWT_SECRET=${JWT_SECRET:your-very-long-and-secure-jwt-secret-key-for-hs256}
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: secret
+      EUREKA_URL: http://admin:${EUREKA_PASSWORD}@eureka-server:8761/eureka
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - auth_logs:/app/AUTH-SERVICE/logs
     depends_on:
@@ -109,9 +109,9 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - MONGODB_URI=mongodb://admin:secret@mongodb:27017/inventory_db?authSource=admin
-      - EUREKA_URL=http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka
+      SPRING_PROFILES_ACTIVE: docker
+      MONGODB_URI: mongodb://admin:secret@mongodb:27017/inventory_db?authSource=admin
+      EUREKA_URL: http://admin:${EUREKA_PASSWORD}@eureka-server:8761/eureka
     volumes:
       - inventory_logs:/app/INVENTORY-SERVICE/logs
     depends_on:
@@ -131,13 +131,13 @@ services:
     ports:
       - "8086:8086"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - MONGODB_URI=mongodb://admin:secret@mongodb:27017/notification_db?authSource=admin
-      - EUREKA_URL=http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka
-      - SPRING_MAIL_HOST=smtp.example.com
-      - SPRING_MAIL_PORT=587
-      - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
-      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
+      SPRING_PROFILES_ACTIVE: docker
+      MONGODB_URI: mongodb://admin:secret@mongodb:27017/notification_db?authSource=admin
+      EUREKA_URL: http://admin:${EUREKA_PASSWORD}@eureka-server:8761/eureka
+      SPRING_MAIL_HOST: smtp.example.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
     volumes:
       - notification_logs:/app/NOTIFICATION-SERVICE/logs
     depends_on:
@@ -157,9 +157,9 @@ services:
     ports:
       - "8084:8084"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - MONGODB_URI=mongodb://admin:secret@mongodb:27017/order_db?authSource=admin
-      - EUREKA_URL=http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka
+      SPRING_PROFILES_ACTIVE: docker
+      MONGODB_URI: mongodb://admin:secret@mongodb:27017/order_db?authSource=admin
+      EUREKA_URL: http://admin:${EUREKA_PASSWORD}@eureka-server:8761/eureka
     volumes:
       - order_logs:/app/ORDER-SERVICE/logs
     depends_on:
@@ -179,9 +179,9 @@ services:
     ports:
       - "8085:8085"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - MONGODB_URI=mongodb://admin:secret@mongodb:27017/payment_db?authSource=admin
-      - EUREKA_URL=http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka
+      SPRING_PROFILES_ACTIVE: docker
+      MONGODB_URI: mongodb://admin:secret@mongodb:27017/payment_db?authSource=admin
+      EUREKA_URL: http://admin:${EUREKA_PASSWORD}@eureka-server:8761/eureka
     volumes:
       - payment_logs:/app/PAYMENT-SERVICE/logs
     depends_on:
@@ -201,9 +201,9 @@ services:
     ports:
       - "8087:8087"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - MONGODB_URI=mongodb://admin:secret@mongodb:27017/product_db?authSource=admin
-      - EUREKA_URL=http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka
+      SPRING_PROFILES_ACTIVE: docker
+      MONGODB_URI: mongodb://admin:secret@mongodb:27017/product_db?authSource=admin
+      EUREKA_URL: http://admin:${EUREKA_PASSWORD}@eureka-server:8761/eureka
     volumes:
       - product_logs:/app/PRODUCT-SERVICE/logs
     depends_on:
