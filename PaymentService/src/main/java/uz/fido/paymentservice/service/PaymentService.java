@@ -1,13 +1,14 @@
 package uz.fido.paymentservice.service;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import uz.fido.paymentservice.clients.NotificationClient;
 import uz.fido.paymentservice.clients.OrderClient;
+import uz.fido.paymentservice.config.RabbitMQConfig;
 import uz.fido.paymentservice.dto.NotificationRequest;
 import uz.fido.paymentservice.dto.OrderResponse;
 import uz.fido.paymentservice.dto.PaymentRequest;
@@ -27,7 +28,8 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderClient orderClient;
-    private final NotificationClient notificationClient;
+    private final RabbitTemplate rabbitTemplate;
+    private final ObjectMapper objectMapper;
 
     private static final String[] VALID_PAYMENT_METHODS = {"CREDIT_CARD", "PAYPAL", "CASH"};
     private static final String[] VALID_STATUSES = {"PENDING", "COMPLETED", "FAILED"};
@@ -57,7 +59,7 @@ public class PaymentService {
             throw new PaymentException("Order validation failed", e);
         }
 
-        // Simulate third-party payment processing (e.g., Stripe)
+        // Simulate third-party payment processing
         String status = simulatePaymentProcessing(request);
         logger.debug("Payment status for orderId {}: {}", request.getOrderId(), status);
 
@@ -71,16 +73,18 @@ public class PaymentService {
         payment = paymentRepository.save(payment);
         logger.info("Payment processed with ID: {}", payment.getId());
 
-        // Send notification
+        // Send notification via RabbitMQ
         if ("COMPLETED".equals(status)) {
             try {
-                notificationClient.sendEmail(new NotificationRequest(
+                NotificationRequest notificationRequest = new NotificationRequest(
                         "customer@example.com", // Replace with actual user email
                         "Payment Confirmation",
                         "Your payment of $" + payment.getAmount() + " for order " + payment.getOrderId() + " was successful."
-                ));
-                logger.debug("Notification sent for payment ID: {}", payment.getId());
-            } catch (FeignException e) {
+                );
+                String message = objectMapper.writeValueAsString(notificationRequest);
+                rabbitTemplate.convertAndSend(RabbitMQConfig.NOTIFICATION_EXCHANGE, RabbitMQConfig.ROUTING_KEY, message);
+                logger.debug("Notification sent to RabbitMQ for payment ID: {}", payment.getId());
+            } catch (Exception e) {
                 logger.warn("Failed to send notification for payment ID {}: {}", payment.getId(), e.getMessage());
                 // Continue despite notification failure
             }
@@ -95,10 +99,7 @@ public class PaymentService {
     }
 
     private String simulatePaymentProcessing(PaymentRequest request) {
-        // Placeholder for third-party payment gateway (e.g., Stripe)
-        // In a real implementation, integrate with Stripe SDK or similar
         try {
-            // Simulate API call
             Thread.sleep(1000); // Simulate network delay
             return "COMPLETED";
         } catch (InterruptedException e) {

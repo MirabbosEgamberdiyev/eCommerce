@@ -1,70 +1,68 @@
 server:
   port: 8080
-  # ssl:
-  #   enabled: true
-  #   key-store: classpath:keystore.p12
-  #   key-store-password: ${KEYSTORE_PASSWORD:changeit}
-  #   key-store-type: PKCS12
-  #   key-alias: gateway
 
 spring:
   application:
     name: API-GATEWAY
+  main:
+    allow-bean-definition-overriding: true
   cloud:
-    gateway:
-      routes:
-        - id: auth-service
-          uri: lb://AUTH-SERVICE
-          predicates:
-            - Path=/api/auth/**
-          filters:
-            - StripPrefix=1
-        - id: product-service
-          uri: lb://PRODUCT-SERVICE
-          predicates:
-            - Path=/api/products/**
-          filters:
-            - StripPrefix=1
-        - id: order-service
-          uri: lb://ORDER-SERVICE
-          predicates:
-            - Path=/api/orders/**
-          filters:
-            - StripPrefix=1
-        - id: payment-service
-          uri: lb://PAYMENT-SERVICE
-          predicates:
-            - Path=/api/payments/**
-          filters:
-            - StripPrefix=1
-        - id: inventory-service
-          uri: lb://INVENTORY-SERVICE
-          predicates:
-            - Path=/api/inventory/**
-          filters:
-            - StripPrefix=1
-        - id: notification-service
-          uri: lb://NOTIFICATION-SERVICE
-          predicates:
-            - Path=/api/notify/**
-          filters:
-            - StripPrefix=1
-      # default-filters:
-      #   - AddRequestHeader=X-Request-Foo, Bar
-      # cors:
-      #   allowed-origins: "http://frontend.example.com"
-      #   allowed-methods: "*"
-      #   allowed-headers: "*"
-      #   allow-credentials: true
-
-#eureka:
-#  client:
-#    register-with-eureka: true
-#    fetch-registry: true
-#    service-url:
-#      defaultZone: ${EUREKA_URL:http://admin:${EUREKA_PASSWORD:admin123}@eureka-server:8761/eureka}
-#  instance:
-#    prefer-ip-address: true
+      gateway:
+        routes:
+          - id: auth-service
+            uri: lb://AUTH-SERVICE
+            predicates:
+              - Path=/api/auth/**
+            filters:
+              - StripPrefix=1
+              - RewritePath=/auth/api-docs,/v3/api-docs
+          - id: product-service
+            uri: lb://PRODUCT-SERVICE
+            predicates:
+              - Path=/api/products/**
+            filters:
+              - StripPrefix=1
+              - RewritePath=/products/api-docs,/v3/api-docs
+          - id: order-service
+            uri: lb://ORDER-SERVICE
+            predicates:
+              - Path=/api/orders/**
+            filters:
+              - StripPrefix=1
+              - RewritePath=/orders/api-docs,/v3/api-docs
+          - id: payment-service
+            uri: lb://PAYMENT-SERVICE
+            predicates:
+              - Path=/api/payments/**
+            filters:
+              - StripPrefix=1
+              - RewritePath=/payments/api-docs,/v3/api-docs
+          - id: inventory-service
+            uri: lb://INVENTORY-SERVICE
+            predicates:
+              - Path=/api/inventory/**
+            filters:
+              - StripPrefix=1
+              - RewritePath=/inventory/api-docs,/v3/api-docs
+          - id: notification-service
+            uri: lb://NOTIFICATION-SERVICE
+            predicates:
+              - Path=/api/notify/**
+            filters:
+              - StripPrefix=1
+              - RewritePath=/notify/api-docs,/v3/api-docs
+          - id: swagger-ui
+            uri: http://localhost:8080
+            predicates:
+              - Path=/swagger-ui/**, /swagger-ui.html
+            filters:
+              - StripPrefix=0
+          - id: swagger-ui-redirect
+            uri: http://localhost:8080
+            predicates:
+              - Path=/swagger-ui/index.html
+            filters:
+              - RewritePath=/swagger-ui/index.html, /webjars/swagger-ui/index.html
 eureka:
   client:
     service-url:
@@ -76,30 +74,67 @@ eureka:
 
 jwt:
   secret: ${JWT_SECRET:your-very-long-and-secure-jwt-secret-key-for-hs256}
-  expiration: ${JWT_EXPIRATION:3600000}
-  public:
+  expiration: 3600000
+  publicEndpoints:
     endpoints:
       - /api/auth/login
       - /api/auth/register
       - /swagger-ui/**
+      - /swagger-ui/index.html
       - /api-docs/**
+      - /api/**/api-docs
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway,prometheus
+        include: health,info,prometheus
+    enabled-by-default: false
   endpoint:
     health:
-      show-details: always
-    gateway:
       enabled: true
+      show-details: always
+    info:
+      enabled: true
+    gateway:
+      enabled: false
+    prometheus:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
+    enabled: true  # Explicitly enable Swagger UI
+    urls:
+      - name: Auth Service
+        url: /api/auth/api-docs
+      - name: Product Service
+        url: /api/products/api-docs
+      - name: Order Service
+        url: /api/orders/api-docs
+      - name: Payment Service
+        url: /api/payments/api-docs
+      - name: Inventory Service
+        url: /api/inventory/api-docs
+      - name: Notification Service
+        url: /api/notify/api-docs
+    operations-sorter: alpha
+    display-request-duration: true
+  api-docs:
+    path: /api-docs
+    enabled: false
+  show-actuator: true
+  packages-to-scan:
+  paths-to-match:
 
 logging:
   level:
     root: INFO
-    uz.fido.api-gateway: DEBUG
-    org.springframework.cloud.gateway: DEBUG
+    uz.fido.api-gateway: DEBUG  # Corrected from uz.fido.api-gateway to match package name
+    org.springframework.cloud.gateway: TRACE
+    org.springdoc: DEBUG
+    com.netflix.eureka: DEBUG
+    com.netflix.discovery: DEBUG
   file:
     name: logs/api-gateway.log
   logback:

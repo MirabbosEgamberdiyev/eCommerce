@@ -15,6 +15,11 @@ spring:
   cloud:
     discovery:
       enabled: true
+  springdoc:
+    api-docs:
+      path: /v3/api-docs
+    swagger-ui:
+      path: /swagger-ui.html
 
 eureka:
   client:
@@ -26,7 +31,7 @@ eureka:
     prefer-ip-address: true
 
 jwt:
-  secret: secret-key-should-be-long-and-secure
+  secret: ${JWT_SECRET:your-very-long-and-secure-jwt-secret-key-for-hs256}
   expiration: 3600000
 
 management:
@@ -34,12 +39,16 @@ management:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:
     root: INFO
-    uz.fido.auth-service: DEBUG
+    uz.fido.authservice: DEBUG
     org.springframework.security: DEBUG
+    org.springdoc: DEBUG
   file:
     name: logs/auth-service.log
   logback:

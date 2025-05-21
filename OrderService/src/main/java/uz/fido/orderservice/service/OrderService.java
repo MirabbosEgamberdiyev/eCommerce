@@ -1,13 +1,15 @@
 package uz.fido.orderservice.service;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import uz.fido.orderservice.client.InventoryClient;
-import uz.fido.orderservice.client.NotificationClient;
+import uz.fido.orderservice.config.RabbitMQConfig;
 import uz.fido.orderservice.dto.NotificationRequest;
 import uz.fido.orderservice.dto.OrderRequest;
 import uz.fido.orderservice.model.Order;
@@ -24,7 +26,8 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final InventoryClient inventoryClient;
-    private final NotificationClient notificationClient;
+    private final RabbitTemplate rabbitTemplate;
+    private final ObjectMapper objectMapper;
 
     public Order createOrder(OrderRequest orderRequest) {
         logger.debug("Creating order for productId: {}", orderRequest.getProductId());
@@ -59,15 +62,17 @@ public class OrderService {
         order = orderRepository.save(order);
         logger.info("Order created with ID: {}", order.getId());
 
-        // Send notification
+        // Send notification via RabbitMQ
         try {
-            notificationClient.sendEmail(new NotificationRequest(
+            NotificationRequest notificationRequest = new NotificationRequest(
                     "customer@example.com", // Replace with actual user email
                     "Order Confirmation",
                     "Your order with ID " + order.getId() + " has been placed successfully."
-            ));
-            logger.debug("Notification sent for order ID: {}", order.getId());
-        } catch (FeignException e) {
+            );
+            String message = objectMapper.writeValueAsString(notificationRequest);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.NOTIFICATION_EXCHANGE, RabbitMQConfig.ROUTING_KEY, message);
+            logger.debug("Notification sent to RabbitMQ for order ID: {}", order.getId());
+        } catch (Exception e) {
             logger.warn("Failed to send notification for order ID {}: {}", order.getId(), e.getMessage());
             // Continue despite notification failure
         }
