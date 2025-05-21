@@ -10,6 +10,11 @@ spring:
   cloud:
     discovery:
       enabled: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: Mirabbos
+    password: Admin.123$
 
 eureka:
   client:
@@ -22,11 +27,9 @@ eureka:
 
 springdoc:
   api-docs:
-    path: /api-docs
-    enabled: true
+    path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
-    enabled: true
 
 management:
   endpoints:

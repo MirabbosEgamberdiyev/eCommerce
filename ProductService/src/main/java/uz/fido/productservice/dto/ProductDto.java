@@ -18,4 +18,6 @@ public class ProductDto {
 
     @Min(value = 0, message = "Price cannot be negative")
     private double price;
+
+    private String userEmail;
 }

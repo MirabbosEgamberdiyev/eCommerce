@@ -14,6 +14,10 @@ import uz.fido.notificationservice.repository.NotificationRepository;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import uz.fido.notificationservice.config.RabbitMQConfig;
+import uz.fido.notificationservice.dto.NotificationRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +28,26 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final NotificationRepository notificationRepository;
     private final Validator validator;
+    private final ObjectMapper objectMapper;
+
+    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
+    public void receiveNotification(String message) {
+        try {
+            // Deserialize the message to NotificationRequest
+            NotificationRequest request = objectMapper.readValue(message, NotificationRequest.class);
+            logger.debug("Received notification for: {}", request.getTo());
+            sendSimpleMessage(request.getTo(), request.getSubject(), request.getBody());
+        } catch (Exception e) {
+            logger.error("Failed to process notification message: {}", e.getMessage());
+        }
+    }
 
     public void sendSimpleMessage(String to, String subject, String text) {
         logger.debug("Preparing to send email to: {}", to);
 
         // Create and send email
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mirabbosegamberdiyev7@gmail.com"); // Match SMTP username
+        message.setFrom("mirabbosegamberdiyev7@gmail.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
