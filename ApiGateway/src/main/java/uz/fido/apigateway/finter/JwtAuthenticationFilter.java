@@ -58,7 +58,6 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             logger.debug("Public endpoint detected, skipping JWT validation: {}", path);
             return chain.filter(exchange);
         }
-
         // Check for Authorization header
         List<String> authHeaders = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
         if (authHeaders == null || authHeaders.isEmpty() || !authHeaders.get(0).startsWith(BEARER_PREFIX)) {
