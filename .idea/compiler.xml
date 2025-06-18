@@ -8,13 +8,20 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="EurekaServer" />
+        <module name="InventoryService" />
+        <module name="product-service" />
+        <module name="NotificationService" />
+        <module name="eureka-server" />
+        <module name="ApiGateway" />
+        <module name="notification-service" />
+        <module name="auth-service" />
+        <module name="inventory-service" />
+        <module name="payment-service" />
         <module name="ProductService" />
         <module name="AuthService" />
-        <module name="InventoryService" />
-        <module name="NotificationService" />
         <module name="ConfigServer" />
+        <module name="order-service" />
         <module name="OrderService" />
-        <module name="ApiGateway" />
         <module name="PaymentService" />
       </profile>
     </annotationProcessing>
@@ -30,6 +37,13 @@
       <module name="OrderService" options="-parameters" />
       <module name="PaymentService" options="-parameters" />
       <module name="ProductService" options="-parameters" />
+      <module name="auth-service" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
+      <module name="inventory-service" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
+      <module name="order-service" options="-parameters" />
+      <module name="payment-service" options="-parameters" />
+      <module name="product-service" options="-parameters" />
     </option>
   </component>
 </project>
