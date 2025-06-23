@@ -88,8 +88,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus
-    enabled-by-default: false
+        include: health, info, prometheus
+    enabled-by-default: true
   endpoint:
     health:
       enabled: true
